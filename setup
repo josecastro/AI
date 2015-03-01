@@ -1,0 +1,4 @@
+sudo apt-get update
+wget raw.github.com/startup-class/dotfiles/master/.screenrc -O $HOME/.screenrc
+sudo apt-get install emacs24
+sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose

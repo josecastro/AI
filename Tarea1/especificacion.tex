@@ -1,0 +1,101 @@
+\documentclass[12pt]{article}
+\usepackage{amsthm}
+
+\newtheorem{defn}{Definici\'on}
+
+\begin{document}
+
+\title{Tarea Programada N\'umero 1}
+\author{Jos\'e Castro, Inteligencia Artificial}
+\date{}
+\maketitle
+
+\section{Introducci\'on}
+El objetivo de esta tarea es que el estudiante aprenda el manejo de herramientas para desarrollo en c\'odigo abierto, se familiarice con el lenguaje Python, y aprenda los algoritmos principales para inferencia en redes bayesianas mediante su colaboración en la implementación de una biblioteca de redes bayesianas en Python.
+
+\section{Objetivos específicos}
+\begin{itemize}
+	\item Obtener cuentas de github.com, gravatar.com, y aws.amazon.com
+	\item Montar y configurar un nodo en la nube de Amazon Web Services
+	\item Generar un fork local en su nodo Amazon del repositorio de python para la biblioteca que se implementa en la tarea
+	\item Colaborar y aportar al c\'odigo de la biblioteca
+\end{itemize}
+
+\section{Log\'istica}
+La tarea se efectuar\'a de manera colaborativo sobre un repositorio en \texttt{github.com}, en el enunciado de la tarea (este documento) se establece una serie de tareas que se deben llevar a cabo, cada estudiante tomar\'a una tarea, la trabajar\'a y la someter\'a para ser aceptada en el c\'odigo del sistema.
+
+Esta especificaci\'on, escrita en \LaTeX{ } tambi\'en se mantendr\'a al dia en el repositorio de \texttt{github.com}, as\'i que es responsabilidad del estudiante estar al dia con el estado de la especificaci\'on.
+
+\section{Actividades}
+\begin{defn}
+Una variable discreta  es un objeto \texttt{python} que se podr\'a leer de un archivo JSON y al cual se le puede asociar un conjunto de valores, cada valor puede opcionalmente contar con una descripción. Por ejemplo:
+
+\begin{verbatim}
+	trabaja = { 
+		"nombre" : "Trabaja",
+		"descripcion" : "indica si la persona trabaja"
+		"cardinalidad" : 2,
+		"dominio" : ["Falso", "Verdadero"]
+		}
+	Historial = {
+		"nombre" : "Historial de Credito",
+		"descripcion" : "indicador de confianza en cliente",
+		"cardinalidad" : 5,
+		"dominio" : ["Excelente", "Bueno", "Regular", "Malo", "Pesimo"]
+		}
+\end{verbatim}
+\end{defn}
+
+\subsection{Actividad 1}
+Escribir la clase en \texttt{python} para la variable discreta. Debe tener m\'etodos para leer y guardar
+a un stream su configuraci\'on en JSON.
+
+\subsection{Actividad 2}
+Implementar el esqueleto de las funciones y clases que se desarrollan en la tarea.
+ 
+\subsection{Actividad 3}
+Implementar el Factor en \texttt{python}, el factor es clase que implementa una funci\'on de un conjunto de variables discretas,
+y que mapea los valores de las variables  a valores num\'ericos (no necesariamente una probabilidad).
+
+OBSERVACIONES
+\begin{itemize}
+	\item El orden de las variables en el factor es relevante, y debe ser tomado en consideraci\'on.
+	\item El factor debe guardar las variables en un vector.
+	\item El factor debe guardar expl\'icitamente la cardinalidad de las variables en un vector.
+	\item El factor debe implementar los valores como un vector (eventualmente un numpy array), y dentro del factor
+		se ha de incluir un diccionario que mapa los nombres de los factores al indice del vector.
+	\item El constructor del Factor debe asignarle 0 por defecto a los valores del vector.
+	\item El factor se debe poder inicializar con una lista de valores para el vector.
+\end{itemize}
+
+\subsection{Actividad 4}
+Implementar un test suite para la tarea (casos de prueba) que se pueda correr cada vez que se le hace una modificaci\'on para
+verificar que no se ha quebrado la funcionalidad.
+
+\subsection{Actividad 5}
+Implementar una funci\'on utilitaria \texttt{assignmentToIndex(assign, dimension) = idx} que convierte los indices de una variable
+a un indice lineal.
+\begin{verbatim}
+>>> assignmentToIndex([0,1,2],[3,1,3])
+5
+\end{verbatim}
+La l\'ogica del map se puede encontrar si se expanden los \'indices en una tabla:
+\begin{center}
+\begin{verbatim}
+0 0 0 = 0
+0 0 1 = 1
+0 0 2 = 2
+0 1 0 = 3
+0 1 1 = 4
+0 1 2 = 5
+\end{verbatim}
+\end{center}
+
+\subsection{Actividad 6}
+Implementar la funci\'on \texttt{indexToAssignment}, funci\'on inversa de \texttt{assignmentToIndex}
+\begin{verbatim}
+>>> indexToAssignment(5,[3,1,3])
+[0,1,2]
+\end{verbatim}
+
+\end{document}
