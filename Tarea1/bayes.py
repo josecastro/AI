@@ -82,7 +82,7 @@ def jointDistribution(factors):
 def marginal(vars, factors, evidence):
     return Factor()
 
-class net:
+class Net:
     def __init__(self, name='', vars=[], factors=[], JSONfile=''):
         self.name = name
         self.vars = vars
