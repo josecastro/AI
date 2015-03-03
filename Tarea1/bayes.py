@@ -27,39 +27,39 @@ class Factor:
 
     # this function should sum over the variables in varList and
     # return the resulting factor
-    def marginalize(varList):
-        return Factor()
-
-    # this function should modify a set of factors given the observed
-    # values of the variables in mapValues so the assignment not consistent
-    # with the observed values should be set to 0, the factors need not be
-    # renormalized
-    def evidence(mapValues):
+    def marginalize(self, varList):
         return Factor()
 
     # retrieve the value of factor for a given combinations of values 
     # of the variables from the factor array
-    def getValue(values):
+    def getValue(self, values):
         return 0
 
     # retrieve the value of factor for a given combination of values
     # of the variables from the factor array using the indexes
-    def getValueIdx(idxList):
+    def getValueIdx(self, idxList):
         return 0
 
     # see getValue
-    def setValue(values,val):
+    def setValue(self, values,val):
         return 0
 
     # see getValueIdx
-    def setValueIdx(valIdx,val):
+    def setValueIdx(self, valIdx,val):
         return 0
 
 
 # factorProd Computes the product of two factors.
 #   c = factorProd(f1,f2) computes the product between two factors, A and B,
 #   where each factor is defined over a set of variables with given dimension.
-def factorProd(factor1,factor2):
+def factorProduct(factor1,factor2):
+    return Factor()
+
+# this function should modify a set of factors given the observed
+# values of the variables in mapValues so the assignment not consistent
+# with the observed values should be set to 0, the factors need not be
+# renormalized
+def observeEvidence(mapValues):
     return Factor()
 
 # jointDistribution Computes the joint distribution defined by a set
@@ -79,5 +79,5 @@ def jointDistribution(factors):
 #   M = marginal(vars, factors, evidence) computes the marginal over variables
 #   vars in the distribution induced by the set of factors, given the evidence
 #
-def marginals(vars, factors, evidence):
+def marginal(vars, factors, evidence):
     return Factor()
