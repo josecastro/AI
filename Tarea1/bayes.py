@@ -81,3 +81,42 @@ def jointDistribution(factors):
 #
 def marginal(vars, factors, evidence):
     return Factor()
+
+class net:
+    def __init__(self, name='', vars=[], factors=[], JSONfile=''):
+        self.name = name
+        self.vars = vars
+        self.factors = factors
+        self.JSONfile = JSONfile
+
+    def setVariables(variables):
+        self.vars = variables
+
+    def setFactors(factors):
+        self.factorts = fators
+
+    def marginal(vars, evidence):
+        return marginal(vars, self.factors, evidence)
+
+    def priorSample(self):
+        # algorithm PRIOR-SAMPLE(bn) in chapter 14 of AIMA book
+        return []
+
+    def rejectionSampling(varNameVector, evidence, numTries):
+        # algorithm REJECTION-SAMPLING(X,e,bn,N) in 
+        # chapter 14 of AIMA book
+        
+        return []
+
+    def likelihoodWeighing(varNameVector, evidence, numTries):
+        # algorithm LIKELIHOOD-WEIGHING(X,e,bn,N) in
+        # chapter 14 of AIMA book
+        
+        return []
+
+    def markovChainMonteCarlo(varNameVector, evidence, numTries):
+        # algorithm MCMC-ASK(X,e,bn,N) in
+        # chapter 14 of AIMA book
+
+        return []
+
