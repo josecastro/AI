@@ -11,6 +11,14 @@ class Variable:
         self.cardinality = len(domain)
         self.domain = domain
 
+    def __str__(self):
+        output = ""
+        output += "[Variable %s]\n" % self.name
+        output += "Description:\t%s\n" % self.description
+        output += "Cardinality:\t%s\n" % self.cardinality
+        output += "Domain:     \t%s]\n" % self.domain
+        return output
+
 
 # Factor: function from a list of variables to a numeric value
 class Factor:
