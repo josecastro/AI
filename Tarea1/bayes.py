@@ -19,6 +19,11 @@ class Variable:
         output += "Domain:     \t%s]\n" % self.domain
         return output
 
+    def toString(self):
+        output = ""
+        output += "{'%s','%s',%s,%s}" % (self.name,self.description,self.cardinality,self.domain)
+        return output
+
 
 # Factor: function from a list of variables to a numeric value
 class Factor:
