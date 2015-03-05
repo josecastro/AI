@@ -70,7 +70,8 @@ class Factor:
         card = prod(self.cardinality)
         # implement as numpy array right filled with zeroes
         self.values = zeros(card)
-        self.values[0:min(card, len(values))] = array(values)
+        max_values = min(card, len(values))
+        self.values[0:max_values] = array(values[0:max_values])
         # make sequences values array
         sequences = array([asarray(v.domain) for v in self.vars])
         # calculate cartesian product to extract keys
