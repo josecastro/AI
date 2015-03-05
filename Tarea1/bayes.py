@@ -63,8 +63,6 @@ class Factor:
     def __init__(self, vars=[], values=[]):
         # save variables
         self.vars = array(vars)
-        # create map from keys to values indices
-        self.map = {}
         # initialize cardinality array
         self.cardinality = array([v.cardinality for v in vars])
         card = prod(self.cardinality)
@@ -76,11 +74,8 @@ class Factor:
         sequences = array([asarray(v.domain) for v in self.vars])
         # calculate cartesian product to extract keys
         keys = __cartesian_product__(sequences)
-        # initialize map
-        val = 0
-        for key in keys:
-            self.map[key] = val
-            val += 1
+        # create map from keys to values indices
+        self.map = dict(zip(keys, array(arange(0,15))))
 
     def __str__(self):
         output = ""
