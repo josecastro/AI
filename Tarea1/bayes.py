@@ -3,6 +3,8 @@
 # 2014-28-2
 # Instituto Technologico de Costa Rica 
 
+from numpy import *
+
 # Variable inplements a discrete event
 class Variable:
     def __init__(self, name='', descr='', domain=['T','F']):
@@ -27,6 +29,23 @@ class Variable:
         output += "{'%s','%s',%s,%s}" % (self.name,self.description,self.cardinality,self.domain)
         return output
 
+def __cartesian_product__(arrays):
+    # construct an open mesh from sequences
+    broadcastable = ix_(*arrays)
+    # broadcast arrays against each other
+    broadcasted = broadcast_arrays(*broadcastable)
+    # rows = product of cardinalities, cols = number of sequences
+    rows, cols = reduce(multiply, broadcasted[0].shape), len(broadcasted)
+    # empty target array
+    out = empty(rows * cols, dtype=broadcasted[0].dtype)
+    start, end = 0, rows
+    # flatten one sequence at a time
+    for a in broadcasted:
+        # flatten sequence dimension
+        out[start:end] = a.reshape(-1)
+        start, end = end, end + rows
+    # reshape, transpose and return each product concatenated as a string
+    return map("".join, out.reshape(cols, rows).T)
 
 # Factor: function from a list of variables to a numeric value
 class Factor:
@@ -42,47 +61,25 @@ class Factor:
     # 5. A dictionary shall be stored in map, that maps factor names to values indices
     # 6. Values shall be initialized to 0's
     def __init__(self, vars=[], values=[]):
-        self.vars = vars
-        # TODO implement as numpy array
-        self.values = values
+        # save variables
+        self.vars = array(vars)
+        # create map from keys to values indices
         self.map = {}
-        self.cardinality = []
-        card = 1
         # initialize cardinality array
-        for var in xrange(len(vars)):
-            self.cardinality.append(vars[var].cardinality)
-            card *= self.cardinality[var]
-        # intialize missing values to 0.0
-        for val in xrange(len(values), card):
-            self.values.append(0.0)
-        # initialize map key
-        map_key_array = []
-        map_key = ""
-        # var1[0], var2[0], ..., varN[0]
-        for var in xrange(len(vars)):
-            map_key_array.append(0)
-            map_key += vars[var].domain[0]
+        self.cardinality = array([v.cardinality for v in vars])
+        card = prod(self.cardinality)
+        # implement as numpy array right filled with zeroes
+        self.values = zeros(card)
+        self.values[0:min(card, len(values))] = array(values)
+        # make sequences values array
+        sequences = array([asarray(v.domain) for v in self.vars])
+        # calculate cartesian product to extract keys
+        keys = __cartesian_product__(sequences)
         # initialize map
-        for val in xrange(len(values)):
-            # map key to value index
-            self.map[map_key] = val;
-            if val == len(values) - 1:
-                break
-            key_idx = len(vars) - 1
-            # find next key
-            while (key_idx >= 0):
-                map_key_array[key_idx] += 1
-                # if var run out of values reset and increment next left
-                if (map_key_array[key_idx] >= vars[key_idx].cardinality):
-                    map_key_array[key_idx] = 0
-                    key_idx -= 1
-                # next key found
-                else:
-                    break
-            # var1[i], var2[j], ..., varN[s]
-            map_key = ""
-            for var in xrange(len(vars)):
-                map_key += vars[var].domain[map_key_array[var]]
+        val = 0
+        for key in keys:
+            self.map[key] = val
+            val += 1
 
     def __str__(self):
         output = ""
@@ -92,6 +89,9 @@ class Factor:
         output += "Map:        \t%s\n" % self.map
         output += "Cardinality:\t%s\n" % self.cardinality
         return output
+
+    def __repr__(self):
+        return self.__str__()
 
     def toString(self):
         output = ""
