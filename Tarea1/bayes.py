@@ -29,9 +29,11 @@ class Variable:
         output += "{'%s','%s',%s,%s}" % (self.name,self.description,self.cardinality,self.domain)
         return output
 
-def __cartesian_product__(arrays):
+def __map_vars_values__(vars, card):
+    # make sequences values array
+    sequences = array([asarray(v.domain) for v in vars])
     # construct an open mesh from sequences
-    broadcastable = ix_(*arrays)
+    broadcastable = ix_(*sequences)
     # broadcast arrays against each other
     broadcasted = broadcast_arrays(*broadcastable)
     # rows = product of cardinalities, cols = number of sequences
@@ -45,7 +47,9 @@ def __cartesian_product__(arrays):
         out[start:end] = a.reshape(-1)
         start, end = end, end + rows
     # reshape, transpose and return each product concatenated as a string
-    return map("".join, out.reshape(cols, rows).T)
+    keys = map("".join, out.reshape(cols, rows).T)
+    # create map from keys to values indices
+    return dict(zip(keys, array(arange(0,card))))
 
 # Factor: function from a list of variables to a numeric value
 class Factor:
@@ -70,12 +74,8 @@ class Factor:
         self.values = zeros(card)
         max_values = min(card, len(values))
         self.values[0:max_values] = array(values[0:max_values])
-        # make sequences values array
-        sequences = array([asarray(v.domain) for v in self.vars])
-        # calculate cartesian product to extract keys
-        keys = __cartesian_product__(sequences)
-        # create map from keys to values indices
-        self.map = dict(zip(keys, array(arange(0,15))))
+        # map variable names to variable values
+        self.map = __map_vars_values__(self.vars, card)
 
     def __str__(self):
         output = ""
