@@ -98,8 +98,11 @@ class Factor:
     # this function should sum over the variables in varList and
     # return the resulting factor
     def marginalize(self, varList):
-        indeces = sort(asarray([nonzero(self.variable_names == idx)[0][0] for idx in varList]))[::-1]
+        # extract the indeces for the variables indicated in varList
+        indeces = sort(asarray([nonzero(self.variable_names == varname)[0][0] for varname in varList]))[::-1]
+        # add dimensions according to each variable cardinality
         reshaped_values = self.values.reshape(self.cardinality)
+        # for each variable and its index: sum out its dimension and delete it from the list
         marginalizedFactor = Factor(delete(self.variables, indeces), map(lambda idx: sum(reshaped_values, axis = idx), indeces)[0].tolist())
         return marginalizedFactor
 
