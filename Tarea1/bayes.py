@@ -3,11 +3,13 @@
 # 2014-28-2
 # Instituto Technologico de Costa Rica 
 
+import sys
 from numpy import *
+import simplejson as json
 
 # Variable inplements a discrete event
 class Variable:
-    def __init__(self, name='', descr='', domain=['T','F']):
+    def __init__(self, name, descr='', domain=['T','F']):
         self.name = name
         self.description = descr
         self.cardinality = len(domain)
@@ -29,6 +31,20 @@ class Variable:
         output += "{'%s','%s',%s,%s}" % (self.name,self.description,self.cardinality,self.domain)
         return output
 
+    def for_json(self):
+        return {'name':self.name, 'description' : self.description,'cardinality': self.cardinality, 'domain': self.domain}
+
+    @staticmethod
+    def dictToVariable(dct):
+        """This function creates a Variable from an
+        dictionary of Variable of Json Decoding
+        """
+        if(type(dct) is dict):
+            try:
+                return Variable(dct['name'],dct['description'], dct['domain'])
+            except:
+                print('unable to convert the dictionary to variable %s', dct) 
+
 # Factor: function from a list of variables to a numeric value
 class Factor:
     # __init__ constructor
@@ -41,6 +57,7 @@ class Factor:
     #    map['T'+'Good'] -> value (depending on variables)
     # 6. Values shall be initialized to 0's
     def __init__(self, variables=[], values=[]):
+        self.name = ''
         # save variables
         self.variables = array(variables)
         # initialize variables names array
@@ -95,6 +112,9 @@ class Factor:
         output += "{'%s', '%s', %s, %s}" % ([v.name for v in self.variables], self.values, self.map, self.cardinality)
         return output
 
+    def for_json(self):
+        return {"name": self.name,"variables": [v.name for v in self.variables],"values": [w for w in self.values]}
+
     # this function should sum over the variables in varList and
     # return the resulting factor
     def marginalize(self, varList):
@@ -124,6 +144,16 @@ class Factor:
     def setValueIdx(self, valIdx, val):
         return 0
 
+    @staticmethod
+    def dictToFactor(dct):
+        """This function takes the array of factors from json decoding and creates a dictionary of factors
+        {'factorName':factorInstance} as seen in test.py
+        """
+        if(type(dct) is dict):
+            try:
+                return dict([[f.name, Factor(f.variables,f.values)] for f in dct])
+            except:
+                print('unable to convert the dictionary to factors %s', dct) 
 
 # factorProd Computes the product of two factors.
 #   c = factorProd(f1,f2) computes the product between two factors, A and B,
@@ -165,6 +195,11 @@ class Net:
         self.factors = factors
         self.JSONfile = JSONfile
 
+    def for_json(self):
+        for key in self.factors:
+            self.factors[key].name = key
+        return {"name": self.name, "variables": self.variables, "factors": self.factors}
+
     def setVariables(self, variables):
         self.variables = variables
 
@@ -196,3 +231,63 @@ class Net:
 
         return []
 
+#class NetEncoder(json.JSONEncoder):
+#    def default(self, obj):
+#        return obj).decode('latin1')
+
+
+def as_net(dct):
+    """converts a dict from json decoder to a Net
+    """
+    name = ''
+    variables = []
+    factors = []
+    if 'name' in dct:
+        name = dct['name']
+    if 'variables' in dct:
+        variables = map(Variable.dictToVariable, dct['variables'])
+    if 'factors' in dct:
+        # Pending to replace the array of variables names on each factor with the array of variables instances
+        # it needs to lookup in 'variables above for the instances'
+        _factors = [] # do the replacement of the varialbles here. dct['factors']
+	#factors = map(Factor.dictToFactor, _factors)
+    return Net(name,variables,_factors, '') 
+
+def loadNet(JSONfile):
+    """Loads an Net object from a JSON file.
+    """
+    net = {}
+    try:
+        fd = open(JSONfile, 'r')
+        text = fd.read()
+        fd.close()
+        net = json.loads(text)
+        net = as_net(net)
+    except:
+        print('could not load:', JSONfile)
+    return net
+
+def dumpNet(net, filename=''):
+    """Dumps a Net object to a JSON file.
+    """
+    if isinstance(net, Net):
+        fn = net.name + '.json'
+        if filename != '':
+            fn = filename
+        elif net.JSONfile != '':
+            fn = net.JSONfile
+        fp = open(fn, 'w')
+	json.dump(net,fp=fp,use_decimal=False, for_json=True, indent=4 * ' ')
+        fp.close()
+    else:
+        raise TypeError(repr(net) + " is not JSON serializable")
+
+if __name__ == '__main__':
+
+    filename = ''
+    if len(sys.argv) == 2:
+        filename = sys.argv[1]
+    elif len(sys.argv) == 3:
+        filename = sys.argv[2]
+    if filename != '':
+        _net = loadNet(filename)

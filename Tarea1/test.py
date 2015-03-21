@@ -53,3 +53,25 @@ factor['joint'] = bayes.Factor(variables= [x1,x2,x3], values=[0.025311, 0.076362
 #                                      {'X1':'F'})
 factor['marginal'] = bayes.Factor([x2,x3], values=[0.0858, 0.0468, 0.1342,
                                                    0.7332])
+
+def test_loadNet():
+    bn1 = bayes.loadNet('test.json')
+    assert bn1.name == 'Test'
+    assert len(bn1.variables) == 3
+    assert bn1.variables[0].name == 'X1'
+    assert bn1.variables[1].cardinality == 2
+    assert bn1.variables[2].domain[1] == 'low'
+
+
+def test_dumpNet():
+    variables = [x1,x2,x3]
+    factors =factor
+    bn1 = bayes.Net('Test2', variables, factors, 'test2.json')
+    bayes.dumpNet(bn1)
+    bn2 = bayes.loadNet('test2.json')
+    assert bn2.name == 'Test2'
+    assert len(bn2.variables) == 3
+    assert bn2.variables[0].name == 'X1'
+
+test_loadNet()
+test_dumpNet()
