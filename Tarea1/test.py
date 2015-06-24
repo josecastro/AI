@@ -5,6 +5,7 @@
 # uncommenting the operations should give the same result
 
 import bayes
+from numpy import *
 
 x1 = bayes.Variable(name='X1', domain=['T','F'])
 x2 = bayes.Variable(name='X2', domain=['0','1'])

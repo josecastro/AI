@@ -159,7 +159,10 @@ class Factor:
 #   c = factorProd(f1,f2) computes the product between two factors, A and B,
 #   where each factor is defined over a set of variables with given dimension.
 def factorProduct(factor1,factor2):
-    return Factor()
+    vars = unique(concatenate([factor1.variables, factor2.variables]))
+    varsCard = reduce(lambda x,y: x*y, [v.cardinality for v in vars])
+    values = zeros(varsCard)
+    return Factor(vars, values)
 
 # this function should modify a set of factors given the observed
 # values of the variables in mapValues so the assignment not consistent
@@ -226,15 +229,49 @@ class Net:
         return []
 
     def markovChainMonteCarlo(self, varNameVector, evidence, numTries):
-        # algorithm MCMC-ASK(X,e,bn,N) in
-        # chapter 14 of AIMA book
+        """ Algorithm MCMC-ASK(X,e,bn,N) in chapter 14 of AIMA book
+        function GIBBS-ASK(X , e, bn,N ) returns an estimate of P(X|e)
+        local variables: N, a vector of counts for each value of X , initially zero
+        Z, the nonevidence variables in bn
+        x, the current state of the network, initially copied from e
+        initialize x with random values for the variables in Z
+        for j = 1 to N do
+            for each Zi in Z do
+                set the value of Zi in x by sampling from P(Zi|mb(Zi))
+                N[x] N[x] + 1 where x is the value of X in x
+        return NORMALIZE(N)"""
+        
+        N = zeros(lenght(X))
+        Z = self._nonEvidenceVariables(evidence)
+        x = self._create_random_x(Z, evidence)
 
+        for i in range(numTries):
+            for zi in Z:
+                mb = self.markovBlanketSample(zi, x)
+                probability = self.rejectionSampling(zi.variable, mb, 50)
+                x[zi] = probability
+
+        return normalize(N)
+        
+    def markovBlanketSample(zi, x):
+        mb = _self._markovBlanket(zi)
+        return _mbSample(mb, x)
+        
+    def _markovBlanket(self, node):
+        """
+        Markov blanket contains node's parent nodes, node's children and node's
+        children's parents
+        :return list(BayesNetNode): list of nodes that form Markov blanket for a given node
+        """
+        markovBlanket = []
+        return markovBlanket
+    
+    def _mbSample(self, markovBlanket, x):
+        mb = []
+        return mb    
+        
+    def normalize(prob):
         return []
-
-#class NetEncoder(json.JSONEncoder):
-#    def default(self, obj):
-#        return obj).decode('latin1')
-
 
 def as_net(dct):
     """converts a dict from json decoder to a Net
@@ -250,7 +287,7 @@ def as_net(dct):
         # Pending to replace the array of variables names on each factor with the array of variables instances
         # it needs to lookup in 'variables above for the instances'
         _factors = [] # do the replacement of the varialbles here. dct['factors']
-	#factors = map(Factor.dictToFactor, _factors)
+    #factors = map(Factor.dictToFactor, _factors)
     return Net(name,variables,_factors, '') 
 
 def loadNet(JSONfile):
@@ -277,7 +314,7 @@ def dumpNet(net, filename=''):
         elif net.JSONfile != '':
             fn = net.JSONfile
         fp = open(fn, 'w')
-	json.dump(net,fp=fp,use_decimal=False, for_json=True, indent=4 * ' ')
+        json.dump(net,fp=fp,use_decimal=False, for_json=True, indent=4 * ' ')
         fp.close()
     else:
         raise TypeError(repr(net) + " is not JSON serializable")
